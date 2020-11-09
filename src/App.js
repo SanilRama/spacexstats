@@ -4,6 +4,7 @@ import { ApolloProvider } from "react-apollo";
 
 // Components
 import MainHeader from "./components/MainHeader";
+import SummaryStats from "./components/SummaryStats";
 
 // Apollo Client Setup
 const client = new ApolloClient({
@@ -15,6 +16,7 @@ function App() {
     <ApolloProvider client={client}>
       <React.Fragment>
         <MainHeader />
+        <SummaryStats />
       </React.Fragment>
     </ApolloProvider>
   );

@@ -5,9 +5,12 @@ $enable-responsive-font-sizes: true !default;
 
 // CSS
 $main-font: "Fugaz One", cursive;
+$secondary-font: "Nunito", sans-serif;
 $small-font: 0.9em;
 
 // Colors
+$primary-color: #111111; // background color
+$secondary-color: #242526; // card color
 $twitter-color: #1da1f2;
 $youtube-color: #ff0000;
 $reddit-color: #ff4500;

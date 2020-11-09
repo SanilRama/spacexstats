@@ -33,9 +33,9 @@ class MainHeader extends Component {
     var data = this.props.data;
     if (data.loading === false) {
       // Variables to save fetched data
-      let date = data.next_launch[0].launch_date_utc;
+      let date = data.next_launch.launch_date_utc;
       var deadline = date;
-      var mission_name = data.next_launch[0].mission_name;
+      var mission_name = data.next_launch.mission_name;
 
       // Change format to YYYY-MM-DD
       date = new Date(date);

@@ -1,0 +1,11 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+// SCSS
+.card-section {
+  @include card;
+}
+
+.summary-list {
+  list-style-type: none;
+}
