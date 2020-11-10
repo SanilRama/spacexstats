@@ -11,6 +11,7 @@ const getPastLaunchesQuery = gql`
       mission_name
       flight_number
       launch_success
+      launch_date_utc
       rocket {
         rocket_name
       }
@@ -27,6 +28,7 @@ class SummaryStats extends Component {
         "falcon 1 missions",
         "falcon 9 missions",
         "falcon heavy missions",
+        "launches this year",
       ],
     };
 
@@ -91,10 +93,24 @@ class SummaryStats extends Component {
       resArray.push(FHTotalSuccess + "/ " + FHTotal);
       perArray.push(p4);
 
+      // Launches this year id #4
+      var d = new Date();
+      var year = d.getFullYear();
+      resArray.push(
+        data.past_launches.filter((past_launch) =>
+          past_launch.launch_date_utc.includes(year)
+        ).length
+      );
+      perArray.push("");
+
       return (
         <span className="">
           {resArray[id]}
-          <span className="text-secondary"> ({perArray[id]}%)</span>
+          {id === 4 ? (
+            <span className="text-secondary"> {perArray[id]}</span>
+          ) : (
+            <span className="text-secondary"> ({perArray[id]}%)</span>
+          )}
         </span>
       );
     }

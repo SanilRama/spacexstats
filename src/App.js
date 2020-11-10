@@ -5,6 +5,7 @@ import { ApolloProvider } from "react-apollo";
 // Components
 import MainHeader from "./components/MainHeader";
 import SummaryStats from "./components/SummaryStats";
+import FlightStats from "./components/FlightStats";
 
 // Apollo Client Setup
 const client = new ApolloClient({
@@ -17,6 +18,7 @@ function App() {
       <React.Fragment>
         <MainHeader />
         <SummaryStats />
+        <FlightStats />
       </React.Fragment>
     </ApolloProvider>
   );
