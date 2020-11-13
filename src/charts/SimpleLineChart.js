@@ -1,4 +1,9 @@
 import React, { PureComponent } from "react";
+
+// Styles
+import "./SimpleLineChart.scss";
+
+// Recharts
 import {
   LineChart,
   Line,
@@ -41,12 +46,24 @@ const data = [
   },
 ];
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active) {
+    return (
+      <div className="custom-tooltip">
+        <p className="label">{`${label} : ${payload[0].value}`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export default class SimpleLineChart extends PureComponent {
   render() {
     return (
       <ResponsiveContainer width="60%" height={350}>
         <LineChart
-          data={data}
+          data={this.props.data}
           margin={{
             top: 5,
             right: 30,
@@ -55,13 +72,15 @@ export default class SimpleLineChart extends PureComponent {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey={this.props.XAxis} />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Line
+            name={this.props.legend}
             type="monotone"
-            dataKey="pv"
+            dataKey={this.props.yAxis}
+            label="banana tester"
             stroke="#8884d8"
             activeDot={{ r: 8 }}
           />
