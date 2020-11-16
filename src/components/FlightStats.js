@@ -1,91 +1,105 @@
 import React, { Component } from "react";
 import { gql } from "apollo-boost";
-import { graphql } from "react-apollo";
 
 // Components
-import SimpleLineChart from "../charts/SimpleLineChart.js";
+import AllMonthly from "./FlightStats/AllMonthly.js";
+import AllYearly from "./FlightStats/AllYearly.js";
+
+// React Bootstrap
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Button from "react-bootstrap/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 
 // Styles and Icons
 import "./styles/FlightStats.scss";
 
-// GraophQL Query
-const getPastLaunchesQuery = gql`
-  {
-    past_launches {
-      mission_name
-      flight_number
-      launch_success
-      launch_date_utc
-      rocket {
-        rocket_name
-      }
-    }
-  }
-`;
 class FlightStats extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      rangeClick: "1", // all-1, year-2, month-3
+      year: "2020", // selected year
+    };
+
+    // Binding
   }
+
   render() {
-    var data = this.props.data;
+    // Get all years since 2006 to current year
+    let yearArray = [];
+    const currentYear = new Date().getFullYear();
+    yearArray = Array.from(
+      { length: (2006 - currentYear) / -1 + 1 },
+      (_, i) => currentYear + i * -1
+    );
+    console.log("testing", yearArray);
 
-    if (data.loading === true) {
-      console.log("flight stats still loading");
-    } else {
-      console.log("flight stats loaded", data);
-
-      // Defining variables
-      var dates = []; // array to save dates from query
-      var counts = {};
-      var yearArray = [];
-      var yearCounts = [];
-      dates = data.past_launches.map((item) => item.launch_date_utc);
-
-      // Extract the year from dates
-      const year = dates
-        .map((item) => new Date(item))
-        .filter((item) => item.getFullYear() > 1970)
-        .map((item) =>
-          item.toLocaleString("en-US", {
-            year: "numeric",
-          })
-        );
-      console.log("year", year);
-
-      // Count the number of launches per year
-      year.forEach(function (x) {
-        counts[x] = (counts[x] || 0) + 1;
-      });
-
-      // Create 2 separate array with years and respective counts
-      yearArray = Object.keys(counts);
-      yearCounts = Object.values(counts);
-      console.log("2 arrays", yearArray, yearCounts);
-
-      // Format data for Recharts (array of objects format)
-      var data = [];
-      var len = yearArray.length;
-      for (var i = 0; i < len; i++) {
-        data.push({
-          year: yearArray[i],
-          number: yearCounts[i],
-        });
-      }
-      console.log("array", data);
-    }
     return (
       <div className="card-section">
         <h5>Flight Statistics</h5>
-        <SimpleLineChart
-          data={data}
-          XAxis="year"
-          yAxis="number"
-          legend="Number of Flights p/ year"
-        />
+        <div className="container-fluid">
+          <div className="row">
+            <div className=" col-md-9 col-lg-9 order-xs-2 order-sm-2 order-md-1 order-lg-1  mt-5">
+              {this.state.rangeClick === "1" ? (
+                <AllYearly />
+              ) : (
+                <AllMonthly year={this.state.year} />
+              )}
+            </div>
+            <div className=" col-md-3 col-lg-3 order-xs-1 order-sm-1 order-md-2 order-lg-2 my-5 py-3  mini-card">
+              <h5>Control Panel</h5>
+              <br />
+              {/* RANGE SELECTION */}
+              Range by:
+              <ButtonGroup className="ml-2" size="sm">
+                <Button
+                  id="1"
+                  variant="outline-light"
+                  className={
+                    this.state.rangeClick === "1" ? "active" : "disabled"
+                  }
+                  onClick={(e) => this.setState({ rangeClick: e.target.id })}
+                >
+                  All time
+                </Button>
+                <Button
+                  id="2"
+                  variant="outline-light"
+                  className={
+                    this.state.rangeClick === "2" ? "active" : "disabled"
+                  }
+                  onClick={(e) => this.setState({ rangeClick: e.target.id })}
+                >
+                  Year
+                </Button>
+
+                {/* DROPDOWN BY YEAR */}
+                {this.state.rangeClick === "2" ? (
+                  <DropdownButton
+                    size="sm"
+                    as={ButtonGroup}
+                    title={`${this.state.year}`}
+                    variant="outline-light"
+                    id="bg-nested-dropdown"
+                    onClick={(e) => this.setState({ year: e.target.innerHTML })}
+                  >
+                    {yearArray.map((item, index) => (
+                      <Dropdown.Item key={index} eventKey="1" value={item}>
+                        {item}
+                      </Dropdown.Item>
+                    ))}
+                  </DropdownButton>
+                ) : (
+                  ""
+                )}
+              </ButtonGroup>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default graphql(getPastLaunchesQuery)(FlightStats);
+export default FlightStats;

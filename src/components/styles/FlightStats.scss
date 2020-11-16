@@ -5,3 +5,21 @@
 .card-section {
   @include card;
 }
+
+@media only screen and (max-width: 600px) {
+  .card-section {
+    @include small-screen-card;
+  }
+}
+
+.mini-card {
+  background-color: rgba($color: $primary-color, $alpha: 0.4);
+  color: rgba($color: white, $alpha: 0.5);
+  opacity: 0.9;
+  border-radius: 10px;
+}
+
+.dropdown-menu {
+  height: 170px;
+  overflow-y: scroll;
+}

@@ -113,7 +113,7 @@ class MainHeader extends Component {
             <div className="col-xs-3 col-sm-12 col-md-3 col-lg-3 pt-3 px-5">
               {data.loading ? (
                 <div className="text-center">
-                  Loading coundown clock...{" "}
+                  Loading countdown clock...{" "}
                   <Spinner animation="border" variant="primary" size="sm" />
                 </div>
               ) : (

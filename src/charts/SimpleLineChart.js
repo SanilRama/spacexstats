@@ -15,36 +15,36 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Page A",
-    pv: 2400,
-  },
-  {
-    name: "Page B",
-    pv: 1398,
-  },
-  {
-    name: "Page C",
-    pv: 9800,
-  },
-  {
-    name: "Page D",
-    pv: 3908,
-  },
-  {
-    name: "Page E",
-    pv: 4800,
-  },
-  {
-    name: "Page F",
-    pv: 3800,
-  },
-  {
-    name: "Page G",
-    pv: 4300,
-  },
-];
+// const data = [
+//   {
+//     name: "Page A",
+//     pv: 2400,
+//   },
+//   {
+//     name: "Page B",
+//     pv: 1398,
+//   },
+//   {
+//     name: "Page C",
+//     pv: 9800,
+//   },
+//   {
+//     name: "Page D",
+//     pv: 3908,
+//   },
+//   {
+//     name: "Page E",
+//     pv: 4800,
+//   },
+//   {
+//     name: "Page F",
+//     pv: 3800,
+//   },
+//   {
+//     name: "Page G",
+//     pv: 4300,
+//   },
+// ];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active) {
@@ -61,21 +61,21 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default class SimpleLineChart extends PureComponent {
   render() {
     return (
-      <ResponsiveContainer width="60%" height={350}>
+      <ResponsiveContainer width="100%" minHeight={350} minWidth={340}>
         <LineChart
           data={this.props.data}
           margin={{
             top: 5,
-            right: 30,
-            left: 20,
+            right: 20,
+            left: -20,
             bottom: 5,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid stroke="#6C757D" strokeDasharray="3 3" />
           <XAxis dataKey={this.props.XAxis} />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend wrapperStyle={{ left: 0, paddingTop: "10px" }} />
           <Line
             name={this.props.legend}
             type="monotone"
