@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { gql } from "apollo-boost";
 
 // Components
-import AllMonthly from "./FlightStats/AllMonthly.js";
-import AllYearly from "./FlightStats/AllYearly.js";
+import ByYear from "./FlightStats/ByYear.js";
+import AllTime from "./FlightStats/AllTime.js";
 
 // React Bootstrap
 import ButtonGroup from "react-bootstrap/ButtonGroup";
@@ -19,6 +19,7 @@ class FlightStats extends Component {
     super(props);
     this.state = {
       rangeClick: "1", // all-1, year-2, month-3
+      vTypeClick: "1", // all vehicles: 1, Falcon 9: 2, Heavy: 3
       year: "2020", // selected year
     };
 
@@ -41,14 +42,28 @@ class FlightStats extends Component {
         <div className="container-fluid">
           <div className="row">
             <div className=" col-md-9 col-lg-9 order-xs-2 order-sm-2 order-md-1 order-lg-1  mt-5">
-              {this.state.rangeClick === "1" ? (
-                <AllYearly />
+              {/* THE CHART */}
+
+              {/* All Time + All Vehicles */}
+              {this.state.rangeClick === "1" &&
+              this.state.vTypeClick === "1" ? (
+                <AllTime />
+              ) : // All time + Falcon 9
+              this.state.rangeClick === "1" && this.state.vTypeClick === "2" ? (
+                <AllTime vehicleType="Falcon 9" />
+              ) : // All time + Falcon Heavy
+              this.state.rangeClick === "1" && this.state.vTypeClick === "3" ? (
+                <AllTime vehicleType="Falcon Heavy" />
+              ) : // By year + Falcon 9
+              this.state.rangeClick === "2" && this.state.vTypeClick === "2" ? (
+                <ByYear year={this.state.year} vehicleType="Falcon 9" />
               ) : (
-                <AllMonthly year={this.state.year} />
+                <ByYear year={this.state.year} />
               )}
             </div>
             <div className=" col-md-3 col-lg-3 order-xs-1 order-sm-1 order-md-2 order-lg-2 my-5 py-3  mini-card">
-              <h5>Control Panel</h5>
+              <h5>Control Panel</h5>{" "}
+              <hr style={{ backgroundColor: "white", opacity: "0.15" }} />
               <br />
               {/* RANGE SELECTION */}
               Range by:
@@ -71,29 +86,71 @@ class FlightStats extends Component {
                   }
                   onClick={(e) => this.setState({ rangeClick: e.target.id })}
                 >
-                  Year
+                  By year
                 </Button>
-
-                {/* DROPDOWN BY YEAR */}
-                {this.state.rangeClick === "2" ? (
-                  <DropdownButton
-                    size="sm"
-                    as={ButtonGroup}
-                    title={`${this.state.year}`}
-                    variant="outline-light"
-                    id="bg-nested-dropdown"
-                    onClick={(e) => this.setState({ year: e.target.innerHTML })}
-                  >
-                    {yearArray.map((item, index) => (
-                      <Dropdown.Item key={index} eventKey="1" value={item}>
-                        {item}
-                      </Dropdown.Item>
-                    ))}
-                  </DropdownButton>
-                ) : (
-                  ""
-                )}
               </ButtonGroup>
+              {/* DROPDOWN BY YEAR */}
+              {this.state.rangeClick === "2" ? (
+                <DropdownButton
+                  className="ml-3"
+                  size="sm"
+                  as={ButtonGroup}
+                  title={`${this.state.year}`}
+                  variant="outline-light"
+                  id="bg-nested-dropdown"
+                  onClick={(e) => this.setState({ year: e.target.innerHTML })}
+                >
+                  {yearArray.map((item, index) => (
+                    <Dropdown.Item key={index} eventKey="1" value={item}>
+                      {item}
+                    </Dropdown.Item>
+                  ))}
+                </DropdownButton>
+              ) : (
+                ""
+              )}
+              <div className="py-5">
+                Vehicle Type:
+                <ButtonGroup className="ml-2" size="sm">
+                  <Button
+                    id="1"
+                    variant="outline-light"
+                    className={
+                      this.state.vTypeClick === "1" ? "active" : "disabled"
+                    }
+                    onClick={(e) => this.setState({ vTypeClick: e.target.id })}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    id="2"
+                    variant="outline-light"
+                    className={
+                      this.state.vTypeClick === "2" ? "active" : "disabled"
+                    }
+                    onClick={(e) => this.setState({ vTypeClick: e.target.id })}
+                  >
+                    Falcon 9
+                  </Button>
+                  {/* Doesn't have the option to show by year -- not necessary */}
+                  {this.state.rangeClick === "1" ? (
+                    <Button
+                      id="3"
+                      variant="outline-light"
+                      className={
+                        this.state.vTypeClick === "3" ? "active" : "disabled"
+                      }
+                      onClick={(e) =>
+                        this.setState({ vTypeClick: e.target.id })
+                      }
+                    >
+                      Falcon Heavy
+                    </Button>
+                  ) : (
+                    ""
+                  )}
+                </ButtonGroup>
+              </div>
             </div>
           </div>
         </div>

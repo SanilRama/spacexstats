@@ -84,6 +84,14 @@ export default class SimpleLineChart extends PureComponent {
             stroke="#8884d8"
             activeDot={{ r: 8 }}
           />
+          <Line
+            name={this.props.legend}
+            type="monotone"
+            dataKey={this.props.test}
+            label="banana tester"
+            stroke="#82ca9d"
+            activeDot={{ r: 8 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     );

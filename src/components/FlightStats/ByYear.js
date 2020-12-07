@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 import { graphql } from "react-apollo";
 
 // Components
-import SimpleLineChart from "../../charts/SimpleLineChart.js";
+import SimpleLineChart from "../../charts/SimpleLineChart";
 
 // Styles and Icons
 import "../styles/FlightStats.scss";
@@ -22,7 +22,7 @@ const getPastLaunchesQuery = gql`
     }
   }
 `;
-class FlightStats extends Component {
+class ByYear extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -36,40 +36,53 @@ class FlightStats extends Component {
       console.log("flight stats loaded", data);
 
       // Defining variables
+      var dYear = this.props.year; // current year (e.g "2020")
       var dates = []; // array to save dates from query
       var counts = {};
-      var yearArray = [];
-      var yearCounts = [];
-      dates = data.past_launches.map((item) => item.launch_date_utc);
+      var monthArray = [];
+      var monthCounts = [];
 
-      // Extract the year from dates
-      const year = dates
+      // Filter by selected vehicle
+      if (this.props.vehicleType === undefined) {
+        dates = data.past_launches.map((item) => item.launch_date_utc);
+      } else if (this.props.vehicleType === "Falcon 9") {
+        dates = data.past_launches
+          .map((item) => item)
+          .filter((item) => item.rocket.rocket_name === "Falcon 9")
+          .map((item) => item.launch_date_utc);
+      }
+
+      // Extract the month from dates
+      const month = dates
         .map((item) => new Date(item))
         .filter((item) => item.getFullYear() > 1970)
         .map((item) =>
           item.toLocaleString("en-US", {
+            month: "short",
             year: "numeric",
           })
-        );
-      console.log("year", year);
+        )
+        .filter((name) => name.includes(dYear)) // filters by month of selected year
+        .map((item) => item.substr(0, 3)); // array type: ["Jan 2020", "Feb 2020",...] -> extracts only "jan", "feb"
+      console.log("month", month);
 
-      // Count the number of launches per year
-      year.forEach(function (x) {
+      // Count the number of launches per month
+      month.forEach(function (x) {
         counts[x] = (counts[x] || 0) + 1;
       });
 
-      // Create 2 separate array with years and respective counts
-      yearArray = Object.keys(counts);
-      yearCounts = Object.values(counts);
-      console.log("2 arrays", yearArray, yearCounts);
+      // Create 2 separate array with months and respective counts
+      monthArray = Object.keys(counts);
+      monthCounts = Object.values(counts);
+      console.log("2 arrays", monthArray, monthCounts);
 
       // Format data for Recharts (array of objects format)
       var chartData = [];
-      var len = yearArray.length;
+      var len = monthArray.length;
       for (var i = 0; i < len; i++) {
         chartData.push({
-          year: yearArray[i],
-          number: yearCounts[i],
+          year: monthArray[i],
+          number: monthCounts[i],
         });
       }
       console.log("array", chartData);
@@ -86,7 +99,7 @@ class FlightStats extends Component {
             data={chartData}
             XAxis="year"
             yAxis="number"
-            legend="Number of Flights p/ year"
+            legend={`Number of Flights p/ month in ${dYear}`}
           />
         )}
       </div>
@@ -94,4 +107,4 @@ class FlightStats extends Component {
   }
 }
 
-export default graphql(getPastLaunchesQuery)(FlightStats);
+export default graphql(getPastLaunchesQuery)(ByYear);

@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 import { graphql } from "react-apollo";
 
 // Components
-import SimpleLineChart from "../../charts/SimpleLineChart";
+import SimpleLineChart from "../../charts/SimpleLineChart.js";
 
 // Styles and Icons
 import "../styles/FlightStats.scss";
@@ -22,7 +22,7 @@ const getPastLaunchesQuery = gql`
     }
   }
 `;
-class AllMonthly extends Component {
+class AllTime extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -36,44 +36,55 @@ class AllMonthly extends Component {
       console.log("flight stats loaded", data);
 
       // Defining variables
-      var dYear = this.props.year; // current year (e.g "2020")
       var dates = []; // array to save dates from query
       var counts = {};
-      var monthArray = [];
-      var monthCounts = [];
-      dates = data.past_launches.map((item) => item.launch_date_utc);
+      var yearArray = [];
+      var yearCounts = [];
 
-      // Extract the month from dates
-      const month = dates
+      // Filter dates by selected vehicle
+      if (this.props.vehicleType === undefined) {
+        dates = data.past_launches.map((item) => item.launch_date_utc);
+      } else if (this.props.vehicleType === "Falcon 9") {
+        dates = data.past_launches
+          .map((item) => item)
+          .filter((item) => item.rocket.rocket_name === "Falcon 9")
+          .map((item) => item.launch_date_utc);
+      } else if (this.props.vehicleType === "Falcon Heavy") {
+        dates = data.past_launches
+          .map((item) => item)
+          .filter((item) => item.rocket.rocket_name === "Falcon Heavy")
+          .map((item) => item.launch_date_utc);
+      }
+
+      // Extract the year from dates
+      const year = dates
         .map((item) => new Date(item))
         .filter((item) => item.getFullYear() > 1970)
         .map((item) =>
           item.toLocaleString("en-US", {
-            month: "short",
             year: "numeric",
           })
-        )
-        .filter((name) => name.includes(dYear)) // filters by month of selected year
-        .map((item) => item.substr(0, 3)); // array type: ["Jan 2020", "Feb 2020",...] -> extracts only "jan", "feb"
-      console.log("month", month);
+        );
+      console.log("year", year);
 
-      // Count the number of launches per month
-      month.forEach(function (x) {
+      // Count the number of launches per year
+      year.forEach(function (x) {
         counts[x] = (counts[x] || 0) + 1;
       });
 
-      // Create 2 separate array with months and respective counts
-      monthArray = Object.keys(counts);
-      monthCounts = Object.values(counts);
-      console.log("2 arrays", monthArray, monthCounts);
+      // Create 2 separate array with years and respective counts
+      yearArray = Object.keys(counts);
+      yearCounts = Object.values(counts);
+      console.log("2 arrays", yearArray, yearCounts);
 
       // Format data for Recharts (array of objects format)
       var chartData = [];
-      var len = monthArray.length;
+      var len = yearArray.length;
       for (var i = 0; i < len; i++) {
         chartData.push({
-          year: monthArray[i],
-          number: monthCounts[i],
+          year: yearArray[i],
+          number: yearCounts[i], //cumulative
+          number2: yearCounts[i - 1], // testing.......
         });
       }
       console.log("array", chartData);
@@ -90,7 +101,8 @@ class AllMonthly extends Component {
             data={chartData}
             XAxis="year"
             yAxis="number"
-            legend={`Number of Flights p/ month in ${dYear}`}
+            test="number2"
+            legend="Number of Flights p/ year"
           />
         )}
       </div>
@@ -98,4 +110,4 @@ class AllMonthly extends Component {
   }
 }
 
-export default graphql(getPastLaunchesQuery)(AllMonthly);
+export default graphql(getPastLaunchesQuery)(AllTime);
